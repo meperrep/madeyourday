@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>made your day</title>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3GLL1S5RXK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-3GLL1S5RXK');
+  </script>
+  <!-- End Google Analytics -->
   <style>
     body {
       margin: 0;
@@ -102,41 +111,6 @@
 
   document.getElementById('quote').innerText =
     messages[Math.floor(Math.random() * messages.length)];
-
-  // --- Counter: 1 ครั้งต่อ 1 คน/Browser ด้วย countapi.store ---
-  const NAMESPACE = 'madeyourday-2024';
-  const KEY = 'visits';
-  const countEl = document.getElementById('count');
-  const visitedKey = 'visited_madeyourday2024';
-
-  async function getCount() {
-    try {
-      const res = await fetch(`https://countapi.store/get/${NAMESPACE}/${KEY}`);
-      const data = await res.json();
-      return data.value;
-    } catch { return null; }
-  }
-
-  async function hit() {
-    try {
-      const res = await fetch(`https://countapi.store/increment/${NAMESPACE}/${KEY}`);
-      const data = await res.json();
-      return data.value;
-    } catch { return null; }
-  }
-
-  let current = await getCount();
-  if (current !== null) countEl.textContent = current;
-  if (!localStorage.getItem(visitedKey)) {
-    const newVal = await hit();
-    if (newVal !== null) {
-      countEl.textContent = newVal;
-      localStorage.setItem(visitedKey, 'yes');
-    }
-  } else {
-    const refreshed = await getCount();
-    if (refreshed !== null) countEl.textContent = refreshed;
-  }
 })();
 </script>
 
