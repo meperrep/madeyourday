@@ -103,43 +103,40 @@
   document.getElementById('quote').innerText =
     messages[Math.floor(Math.random() * messages.length)];
 
-  const NAMESPACE = 'madeyourday';
-  const KEY = 'visits';
-  const API_BASE = 'https://api.countapi.xyz';
-
+  // ใช้ CounterAPI ที่ยังใช้งานได้
+  const counterId = "madeyourday-2024"; // ชื่อตัวนับ เปลี่ยนได้
   const countEl = document.getElementById('count');
+  const visitedKey = "visited_madeyourday_2024";
 
-  async function getCount(){
+  // ดึงยอด count ล่าสุด
+  async function getCount() {
     try {
-      const res = await fetch(`${API_BASE}/get/${NAMESPACE}/${KEY}`);
+      const res = await fetch(`https://api.counterapi.com/api/${counterId}`);
       const data = await res.json();
-      return data.value;
+      return data.count;
     } catch { return null; }
   }
 
-  async function hit(){
+  // เพิ่มยอดเข้า +1
+  async function hitCount() {
     try {
-      const res = await fetch(`${API_BASE}/hit/${NAMESPACE}/${KEY}`);
+      const res = await fetch(`https://api.counterapi.com/api/${counterId}?increment=true`);
       const data = await res.json();
-      return data.value;
+      return data.count;
     } catch { return null; }
   }
 
-  const visitedKey = 'visited_madeyourday';
-
-  let current = await getCount();
-  if (current !== null) countEl.textContent = current;
-
+  // เช็คว่าเคยเข้าเว็บนี้ใน browser แล้วหรือยัง
+  let count = null;
   if (!localStorage.getItem(visitedKey)) {
-    const newVal = await hit();
-    if (newVal !== null) {
-      countEl.textContent = newVal;
-      localStorage.setItem(visitedKey, 'yes');
-    }
+    count = await hitCount();
+    // ตั้งค่าห้ามนับซ้ำใน browser เดิม
+    localStorage.setItem(visitedKey, "yes");
   } else {
-    const refreshed = await getCount();
-    if (refreshed !== null) countEl.textContent = refreshed;
+    count = await getCount();
   }
+  // แสดงผล count
+  countEl.textContent = count !== null ? count : "?";
 })();
 </script>
 
