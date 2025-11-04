@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>made your day</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Prompt', sans-serif;
+      font-size: 24px;
+      text-align: center;
+      color: #3a2e2a;
+      background: linear-gradient(135deg, #f8ede3, #fdfcfb);
+      background-image:
+        radial-gradient(rgba(255,255,255,0.4) 1px, transparent 1px),
+        linear-gradient(135deg, #f8ede3, #fdfcfb);
+      background-size: 30px 30px, 100% 100%;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+      opacity: 0.2;
+      pointer-events: none;
+    }
+    .container {
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(6px);
+      border-radius: 20px;
+      padding: 50px;
+      max-width: 700px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      animation: fadeIn 0.9s ease-in-out;
+      position: relative;
+      z-index: 1;
+    }
+    #quote { line-height: 1.6; animation: fadeText 0.9s ease-in-out; }
+    .page-count { margin-top: 25px; font-size: 16px; color: #8a7a6d; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(8px);} to { opacity:1; transform: translateY(0);} }
+    @keyframes fadeText { from { opacity:0;} to { opacity:1;} }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="quote">...</div>
+    <div class="page-count">
+      มีคนผ่านมาเจอหน้านี้แล้ว <span id="count">...</span> คน 🤍
+    </div>
+  </div>
+
+<script>
+(async function(){
+  const messages = [
+    "You’re doing better than you think.",
+    "เหนื่อยได้ แต่อย่าทิ้งตัวเองนะ",
+    "Even quiet growth is growth.",
+    "ไม่มีใครเริ่มต้นเก่งหรอก ทุกอย่างมันจะค่อย ๆ โตเอง",
+    "You’re allowed to rest and still be strong.",
+    "เก่งแล้ว ที่ยังอยู่ตรงนี้ได้",
+    "Peace over perfection, always.",
+    "วันนี้ยังไม่ดี ก็ไม่ได้แปลว่ามันจะไม่ดีตลอดไป",
+    "You’re still worthy on the bad days.",
+    "ไม่ต้องรีบหายดี แค่ไม่หายไปก็พอ",
+    "You’re allowed to begin again.",
+    "เธอเริ่มใหม่ได้เสมอ",
+    "Healing takes time — and that’s okay.",
+    "ใจเย็น ๆ ค่อย ๆ ฟื้นก็ได้",
+    "You’ve survived 100% of your worst days.",
+    "ผ่านมาได้แล้วตั้งหลายครั้ง ครั้งนี้ก็เหมือนกัน",
+    "You can rest without giving up.",
+    "การพักไม่ได้แปลว่ายอมแพ้",
+    "Some days progress means just showing up.",
+    "แค่มาวันนี้ก็เก่งมากแล้ว",
+    "It’s okay to not have it all figured out.",
+    "ไม่จำเป็นต้องรู้คำตอบของทุกอย่างตอนนี้ก็ได้",
+    "Your slow progress is still progress.",
+    "เติบโตช้าไม่เป็นไร แค่ยังเติบโตอยู่",
+    "You don’t need to be perfect to be enough.",
+    "เธอมีคุณค่าอยู่แล้ว",
+    "The sun will find you again.",
+    "เดี๋ยวความอบอุ่นก็กลับมา",
+    "Even if no one says it — I’m proud of you.",
+    "เราภูมิใจในตัวเธอนะ",
+    "You’re not weak for needing a break.",
+    "พักได้ ไม่ผิดเลย",
+    "You’re growing in ways you can’t see yet.",
+    "บางการเติบโตมองไม่เห็น แต่มีอยู่จริง",
+    "Keep going. You’re closer than you think.",
+    "เธอกำลังไปได้ดีเลย"
+  ];
+
+  document.getElementById('quote').innerText =
+    messages[Math.floor(Math.random() * messages.length)];
+
+  const NAMESPACE = 'madeyourday';
+  const KEY = 'visits';
+  const API_BASE = 'https://api.countapi.xyz';
+
+  const countEl = document.getElementById('count');
+
+  async function getCount(){
+    try {
+      const res = await fetch(`${API_BASE}/get/${NAMESPACE}/${KEY}`);
+      const data = await res.json();
+      return data.value;
+    } catch { return null; }
+  }
+
+  async function hit(){
+    try {
+      const res = await fetch(`${API_BASE}/hit/${NAMESPACE}/${KEY}`);
+      const data = await res.json();
+      return data.value;
+    } catch { return null; }
+  }
+
+  const visitedKey = 'visited_madeyourday';
+
+  let current = await getCount();
+  if (current !== null) countEl.textContent = current;
+
+  if (!localStorage.getItem(visitedKey)) {
+    const newVal = await hit();
+    if (newVal !== null) {
+      countEl.textContent = newVal;
+      localStorage.setItem(visitedKey, 'yes');
+    }
+  } else {
+    const refreshed = await getCount();
+    if (refreshed !== null) countEl.textContent = refreshed;
+  }
+})();
+</script>
+
+</body>
+</html>
